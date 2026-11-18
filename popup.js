@@ -231,6 +231,7 @@
 
   function setBadge(kind, text) {
     $('sourceBadge').className = 'badge ' + kind;
+    document.documentElement.setAttribute('data-source', kind);
     $('sourceText').textContent = text;
   }
 
