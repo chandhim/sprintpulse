@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SprintPulse Interactive Guide</title>
+<style>
+  :root { --bg:#f7f8f9; --card:#fff; --text:#172b4d; --muted:#626f86; --line:#dcdfe4; --accent:#0c66e4;
+    --g:#22a06b; --a:#f38a3f; --r:#e2483d; --gbg:#dcfff1; --abg:#fff3eb; --rbg:#ffeceb; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1d2125; --card:#22272b; --text:#b6c2cf; --muted:#8c9bab; --line:#38414a; --accent:#579dff;
+    --gbg:#164b35; --abg:#5f3811; --rbg:#5d1f1a; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  .wrap { max-width:760px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { margin:0 0 4px; font-size:28px; } h2 { margin:0 0 8px; font-size:18px; }
+  .lead { color:var(--muted); margin:0 0 20px; }
+  .tabs { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:14px; }
+  .tabs button { padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--text); font:inherit; cursor:pointer; }
+  .tabs button[aria-selected=true] { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; }
+  [hidden] { display:none !important; }
+  .step { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-top:1px solid var(--line); }
+  .step:first-of-type { border-top:0; }
+  .step input { margin-top:5px; width:18px; height:18px; accent-color:var(--accent); }
+  .step input:checked + div { opacity:.55; text-decoration:line-through; }
+  code, kbd { background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:0 5px; font:13px ui-monospace,Consolas,monospace; }
+  .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; margin:10px 0 4px; }
+  .bar i { display:block; height:100%; width:0; background:var(--accent); transition:width .3s; }
+  .ctl { display:grid; grid-template-columns:150px 1fr 90px; gap:10px; align-items:center; margin:10px 0; }
+  .ctl input { width:100%; accent-color:var(--accent); }
+  .ctl output { text-align:right; font-variant-numeric:tabular-nums; }
+  .rag { display:inline-block; min-width:64px; text-align:center; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; }
+  .green { background:var(--gbg); color:var(--g); } .amber { background:var(--abg); color:var(--a); } .red { background:var(--rbg); color:var(--r); }
+  .overall { margin-top:14px; padding:12px; border-radius:8px; font-weight:600; }
+  details { border-top:1px solid var(--line); padding:10px 0; } details:first-of-type { border-top:0; }
+  summary { cursor:pointer; font-weight:600; }
+  table { width:100%; border-collapse:collapse; } td { padding:6px 4px; border-top:1px solid var(--line); } tr:first-child td { border-top:0; }
+  @media (max-width:520px) { .ctl { grid-template-columns:1fr 1fr; } .ctl input { grid-column:1/-1; order:3; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SprintPulse</h1>
+  <p class="lead">RAG sprint reports for Jira and Trello, in a side panel you can hide any time. Poke around below.</p>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-t="install">Install</button>
+    <button role="tab" aria-selected="false" data-t="rag">Try the RAG rules</button>
+    <button role="tab" aria-selected="false" data-t="keys">Shortcuts</button>
+    <button role="tab" aria-selected="false" data-t="faq">FAQ</button>
+  </div>
+
+  <section id="install" class="card">
+    <h2>Install in 2 minutes</h2>
+    <label class="step"><input type="checkbox"><div>Open <code>chrome://extensions</code> (Edge: <code>edge://extensions</code>). Chrome 114+ is required for side panels.</div></label>
+    <label class="step"><input type="checkbox"><div>Turn on <b>Developer mode</b> (top right).</div></label>
+    <label class="step"><input type="checkbox"><div>Click <b>Load unpacked</b> and pick the folder that contains <code>manifest.json</code>.</div></label>
+    <label class="step"><input type="checkbox"><div>Pin SprintPulse, then click its icon to open the side panel.</div></label>
+    <label class="step"><input type="checkbox"><div>Open a Jira or Trello board and click <b>Analyze sprint</b>, or try <b>demo data</b> anywhere.</div></label>
+    <div class="bar"><i id="prog"></i></div><small id="progText" style="color:var(--muted)">0 of 5 steps done</small>
+  </section>
+
+  <section id="rag" class="card" hidden>
+    <h2>RAG calculator (default thresholds)</h2>
+    <div class="ctl"><label for="gap">Schedule gap</label><input id="gap" type="range" min="0" max="50" value="8"><output id="gapO"></output></div>
+    <div class="ctl"><label for="blk">Blocked items</label><input id="blk" type="range" min="0" max="6" value="1"><output id="blkO"></output></div>
+    <div class="ctl"><label for="age">Oldest blocker</label><input id="age" type="range" min="0" max="10" value="1"><output id="ageO"></output></div>
+    <div class="ctl"><label for="scp">Scope added</label><input id="scp" type="range" min="0" max="30" value="4"><output id="scpO"></output></div>
+    <div class="ctl"><label for="ovd">Overdue items</label><input id="ovd" type="range" min="0" max="6" value="0"><output id="ovdO"></output></div>
+    <table>
+      <tr><td>Schedule</td><td id="rS"></td></tr><tr><td>Blockers</td><td id="rB"></td></tr>
+      <tr><td>Scope</td><td id="rC"></td></tr><tr><td>Overdue</td><td id="rO"></td></tr>
+    </table>
+    <div id="overall" class="overall"></div>
+    <p style="color:var(--muted);font-size:13px">Schedule gap = time used % minus work done %. Overall status is the worst of the four areas.</p>
+  </section>
+
+  <section id="keys" class="card" hidden>
+    <h2>Keyboard shortcuts (inside the panel)</h2>
+    <table>
+      <tr><td><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></td><td>Switch Overview / Items / Report</td></tr>
+      <tr><td><kbd>C</kbd></td><td>Copy the current report</td></tr>
+      <tr><td><kbd>D</kbd></td><td>Load demo data</td></tr>
+      <tr><td><kbd>R</kbd></td><td>Run again</td></tr>
+      <tr><td><kbd>/</kbd></td><td>Search items</td></tr>
+      <tr><td><kbd>T</kbd></td><td>Cycle theme (System, Light, Dark)</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>Hide the panel</td></tr>
+    </table>
+  </section>
+
+  <section id="faq" class="card" hidden>
+    <h2>FAQ</h2>
+    <details><summary>How do I hide the side panel?</summary><p>Click the hide button in the panel header, press <kbd>Esc</kbd>, or use the browser's own close (X) button on the panel. Click the toolbar icon to bring it back.</p></details>
+    <details><summary>Does it follow me between tabs?</summary><p>Yes. The panel re-detects the active tab: switch to a different Jira or Trello board and it resets to that board. Switching to a non-board tab keeps your last result on screen only if it came from demo data.</p></details>
+    <details><summary>Where does my data go?</summary><p>Nowhere. Requests are read-only GETs run inside your own board tab, and results are stored only in your browser.</p></details>
+    <details><summary>Which permissions does it need?</summary><p><code>sidePanel</code>, <code>scripting</code>, <code>storage</code>, plus access to <code>*.atlassian.net</code> and <code>trello.com</code> so it can follow tab changes without you re-clicking the icon.</p></details>
+    <details><summary>Jira Server / Data Center?</summary><p>Not supported yet. Jira Cloud Scrum boards with an active sprint only.</p></details>
+  </section>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  document.querySelectorAll('.tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.tabs button').forEach(function (x) { x.setAttribute('aria-selected', x === b); });
+      ['install','rag','keys','faq'].forEach(function (t) { $(t).hidden = t !== b.dataset.t; });
+    });
+  });
+  var boxes = document.querySelectorAll('.step input');
+  function prog() {
+    var n = document.querySelectorAll('.step input:checked').length;
+    $('prog').style.width = (n / boxes.length * 100) + '%';
+    $('progText').textContent = n + ' of ' + boxes.length + ' steps done' + (n === boxes.length ? ' - you are set!' : '');
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', prog); });
+
+  function pill(r, t) { return '<span class="rag ' + r + '">' + r.toUpperCase() + '</span> ' + t; }
+  function calc() {
+    var gap = +$('gap').value, blk = +$('blk').value, age = +$('age').value, scp = +$('scp').value, ovd = +$('ovd').value;
+    $('gapO').textContent = gap + ' pts'; $('blkO').textContent = blk; $('ageO').textContent = age + ' d';
+    $('scpO').textContent = scp + '%'; $('ovdO').textContent = ovd;
+    var s = gap <= 5 ? 'green' : gap <= 15 ? 'amber' : 'red';
+    var b = blk === 0 ? 'green' : (blk >= 3 || age > 2) ? 'red' : 'amber';
+    var c = scp === 0 ? 'green' : scp <= 10 ? 'amber' : 'red';
+    var o = ovd === 0 ? 'green' : ovd <= 2 ? 'amber' : 'red';
+    $('rS').innerHTML = pill(s, gap + ' pts behind'); $('rB').innerHTML = pill(b, blk + ' blocked');
+    $('rC').innerHTML = pill(c, scp + '% added'); $('rO').innerHTML = pill(o, ovd + ' overdue');
+    var rank = { green: 0, amber: 1, red: 2 }, all = [s, b, c, o];
+    var worst = all.reduce(function (m, x) { return rank[x] > rank[m] ? x : m; }, 'green');
+    $('overall').className = 'overall ' + worst;
+    $('overall').textContent = 'Overall ' + worst.toUpperCase();
+  }
+  document.querySelectorAll('#rag input').forEach(function (i) { i.addEventListener('input', calc); });
+  calc();
+})();
+</script>
+</body>
+</html>

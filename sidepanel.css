@@ -1,4 +1,4 @@
-/* SprintPulse UI. Colours follow the Atlassian (Jira) design-system palette so the popup
+/* SprintPulse UI. Colours follow the Atlassian (Jira) design-system palette so the panel
    sits naturally next to Jira; the accent switches to Trello blue on Trello boards. */
 @property --p { syntax: "<number>"; inherits: false; initial-value: 0; }
 :root {
@@ -86,8 +86,9 @@
 
 html, body { background: var(--bg); }
 body {
-  width: 420px;
-  min-height: 300px;
+  width: 100%;
+  min-width: 300px;
+  min-height: 100vh;
   margin: 0;
   font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Helvetica Neue", sans-serif;
   color: var(--text);
@@ -355,7 +356,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 
 /* ---------- item lists ---------- */
 .item-list { list-style: none; margin: 0; padding: 0; max-height: 190px; overflow: auto; }
-.item-list.tall { max-height: 330px; }
+.item-list.tall { max-height: calc(100vh - 330px); min-height: 160px; }
 .item-list li {
   display: flex; align-items: flex-start; gap: 8px;
   padding: 7px 8px; border-radius: 8px;
@@ -398,7 +399,7 @@ mark { background: var(--amber-bg); color: inherit; border-radius: 2px; padding:
 .seg { padding: 4px 14px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--muted); font-weight: 600; transition: all .15s; }
 .seg.active { background: var(--card); color: var(--accent); box-shadow: var(--shadow); }
 .report {
-  margin: 0 0 10px; padding: 10px 12px; max-height: 280px; overflow: auto;
+  margin: 0 0 10px; padding: 10px 12px; max-height: calc(100vh - 330px); min-height: 160px; overflow: auto;
   white-space: pre-wrap; word-break: break-word;
   font: 11.5px/1.55 ui-monospace, Consolas, "Cascadia Mono", "Courier New", monospace;
   color: var(--text); background: var(--card); border: 1px solid var(--line); border-radius: 10px;

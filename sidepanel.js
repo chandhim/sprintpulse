@@ -1,4 +1,4 @@
-/* SprintPulse popup controller (interactive UI). */
+/* SprintPulse side panel controller (interactive UI). */
 (function () {
   'use strict';
 
@@ -91,7 +91,7 @@
     const start = performance.now();
     const dur = 900;
     (function step(t) {
-      const p = Math.min(1, (t - start) / dur);
+      const p = Math.max(0, Math.min(1, (t - start) / dur));
       const eased = 1 - Math.pow(1 - p, 3);
       node.textContent = Math.round(to * eased) + suffix;
       if (p < 1) requestAnimationFrame(step);
@@ -207,15 +207,43 @@
     initRipple();
     updateThemeTitle();
 
+    $('hideBtn').addEventListener('click', hidePanel);
+    await syncTab(true);
+    // The panel stays open while you browse, so follow the active tab.
+    chrome.tabs.onActivated.addListener(function () { syncTab(false); });
+    chrome.tabs.onUpdated.addListener(function (id, info, tab) {
+      if (ctx.tab && id === ctx.tab.id && (info.url || info.status === 'complete')) syncTab(false);
+    });
+    chrome.windows.onFocusChanged.addListener(function () { syncTab(false); });
+  }
+
+  function hidePanel() { window.close(); }
+
+  function sourceId(d) {
+    return d.source === 'jira' ? 'jira:' + d.host + ':' + d.boardId
+      : d.source === 'trello' ? 'trello:' + d.shortLink : 'none';
+  }
+
+  // Re-read the active tab; reset the panel only when the board actually changed.
+  async function syncTab(first) {
+    let tab = null;
     try {
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      ctx.tab = tabs && tabs[0];
-    } catch (e) {
-      ctx.tab = null;
-    }
-    ctx.detected = SP.normalize.detectSource((ctx.tab && ctx.tab.url) || '');
+      const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+      tab = tabs && tabs[0];
+    } catch (e) { /* keep previous */ }
+    if (!tab) return;
+    const detected = SP.normalize.detectSource(tab.url || '');
+    const changed = first || sourceId(detected) !== sourceId(ctx.detected);
+    ctx.tab = tab;
+    if (!changed) return;
+    ctx.detected = detected;
+    if (!first && ctx.lastDemo && view.result) return; // keep showing the demo
+    view.result = null;
+    $('results').hidden = true;
+    $('skeleton').hidden = true;
+    setStatus('');
     renderIntro();
-    if (ctx.detected.source === 'trello') await loadTrelloDates();
+    if (detected.source === 'trello') await loadTrelloDates();
   }
 
   function cycleTheme() {
@@ -239,6 +267,10 @@
     const d = ctx.detected;
     const intro = $('introText');
     const title = $('introTitle');
+    $('intro').hidden = false;
+    $('trelloDates').hidden = true;
+    $('analyzeBtn').hidden = d.source === 'none';
+    $('demoBtn').className = d.source === 'none' ? 'btn primary' : 'btn ghost';
     if (d.source === 'jira') {
       setBadge('jira', 'Jira board #' + d.boardId);
       title.textContent = 'Jira board detected';
@@ -251,14 +283,12 @@
     } else {
       setBadge('none', 'Not a board');
       title.textContent = 'Open a Jira or Trello board';
-      $('analyzeBtn').hidden = true;
-      $('demoBtn').className = 'btn primary';
       if (d.hint === 'jira') {
-        intro.textContent = 'Open a Jira Software board (the URL contains /boards/<number>), then click the SprintPulse icon again. Or try the demo.';
+        intro.textContent = 'Open a Jira Software board (the URL contains /boards/<number>). This panel follows your active tab. Or try the demo.';
       } else if (d.hint === 'trello') {
-        intro.textContent = 'Open a Trello board (the URL starts with trello.com/b/), then click the SprintPulse icon again. Or try the demo.';
+        intro.textContent = 'Open a Trello board (the URL starts with trello.com/b/). This panel follows your active tab. Or try the demo.';
       } else {
-        intro.textContent = 'Then click the SprintPulse icon again. You can explore a full example report with the demo data right now.';
+        intro.textContent = 'Switch to a Jira or Trello board tab and this panel will pick it up. You can explore a full example report with the demo data right now.';
       }
     }
   }
@@ -837,7 +867,8 @@
     }
     const hasResults = !$('results').hidden;
     const k = e.key.toLowerCase();
-    if (k === 't') { cycleTheme(); }
+    if (e.key === 'Escape') { hidePanel(); }
+    else if (k === 't') { cycleTheme(); }
     else if (k === 'd' && !$('demoBtn').disabled) { run(true); }
     else if (hasResults && k === '1') { showTab('overview'); }
     else if (hasResults && k === '2') { showTab('items'); }
