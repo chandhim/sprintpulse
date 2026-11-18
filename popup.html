@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SprintPulse</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="" width="24" height="24">
+      <span>SprintPulse</span>
+    </div>
+    <span id="sourceBadge" class="badge">Checking page…</span>
+  </header>
+
+  <main>
+    <section id="intro" class="card">
+      <p id="introText" class="intro-text"></p>
+
+      <div id="trelloDates" class="dates" hidden>
+        <label class="field">Sprint name (optional)
+          <input id="sprintName" type="text" placeholder="Sprint 1" maxlength="60">
+        </label>
+        <div class="row">
+          <label class="field">Start date <input id="startDate" type="date"></label>
+          <label class="field">End date <input id="endDate" type="date"></label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="analyzeBtn" class="primary" type="button">Analyze sprint</button>
+        <button id="demoBtn" class="secondary" type="button">Try demo data</button>
+      </div>
+    </section>
+
+    <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+
+    <section id="results" hidden>
+      <div class="card overall">
+        <div id="overallBadge" class="rag big">-</div>
+        <div class="overall-text">
+          <div id="sprintTitle" class="sprint-title"></div>
+          <div id="sprintDates" class="muted"></div>
+          <div id="previous" class="muted"></div>
+        </div>
+      </div>
+      <p id="overallReason" class="reason"></p>
+
+      <div id="areas" class="areas"></div>
+
+      <details id="healthBox" class="card health">
+        <summary>Board health: <strong id="healthScore">-</strong>/100 <span id="healthCount" class="muted"></span></summary>
+        <ul id="healthList" class="health-list"></ul>
+      </details>
+
+      <div class="card reports">
+        <div class="tabs" role="tablist" aria-label="Report type">
+          <button id="tabExec" class="tab active" role="tab" aria-selected="true" type="button">Executive</button>
+          <button id="tabTeam" class="tab" role="tab" aria-selected="false" type="button">Team</button>
+        </div>
+        <textarea id="reportText" readonly rows="10" aria-label="Report text"></textarea>
+        <div class="actions">
+          <button id="copyBtn" class="primary" type="button">Copy report</button>
+          <span id="copied" class="copied" hidden>Copied</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="#" id="settingsLink">Settings</a>
+    <span class="muted">Data stays in your browser.</span>
+  </footer>
+
+  <script src="lib/engine.js"></script>
+  <script src="lib/normalize.js"></script>
+  <script src="lib/fetchers.js"></script>
+  <script src="lib/report.js"></script>
+  <script src="lib/sample.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
