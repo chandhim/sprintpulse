@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SprintPulse",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "One-click, evidence-based Red/Amber/Green sprint status reports from your Jira or Trello board.",
   "action": {
     "default_title": "SprintPulse",

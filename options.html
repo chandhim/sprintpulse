@@ -4,34 +4,49 @@
   <meta charset="utf-8">
   <title>SprintPulse Settings</title>
   <link rel="stylesheet" href="popup.css">
-  <style>
-    body { width: auto; max-width: 640px; margin: 0 auto; }
-    main { padding: 16px; }
-    h1 { font-size: 18px; margin: 0; }
-    .setting { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
-    .setting:last-child { border-bottom: 0; }
-    .setting label { flex: 1; }
-    .setting input { width: 90px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
-    .hint { color: var(--muted); font-size: 12px; }
-  </style>
+  <link rel="stylesheet" href="options.css">
+  <script src="theme.js"></script>
 </head>
-<body>
+<body class="options">
   <header class="top">
     <div class="brand">
-      <img src="icons/icon48.png" alt="" width="24" height="24">
-      <h1>SprintPulse Settings</h1>
+      <img src="icons/icon48.png" alt="" width="28" height="28">
+      <div class="brand-text">
+        <span class="brand-name">SprintPulse Settings</span>
+        <span class="badge"><span class="dot"></span><span>RAG thresholds &amp; appearance</span></span>
+      </div>
+    </div>
+    <div class="theme-switch segmented" role="radiogroup" aria-label="Theme">
+      <button class="seg" data-theme-opt="system" role="radio" type="button">System</button>
+      <button class="seg" data-theme-opt="light" role="radio" type="button">Light</button>
+      <button class="seg" data-theme-opt="dark" role="radio" type="button">Dark</button>
     </div>
   </header>
+
   <main>
-    <p class="hint">These thresholds decide the Red/Amber/Green rating. The overall status is the worst of the four areas. Defaults are shown in brackets.</p>
-    <form id="form" class="card"></form>
-    <div class="actions">
-      <button id="saveBtn" class="primary" type="button">Save</button>
-      <button id="resetBtn" class="secondary" type="button">Reset to defaults</button>
-      <span id="saved" class="copied" hidden>Saved</span>
-    </div>
-    <p class="hint">All settings and results are stored only in this browser. SprintPulse sends no data to any server.</p>
+    <section class="card intro-card">
+      <h1>How SprintPulse rates your sprint</h1>
+      <p class="muted">Each area gets a Green, Amber or Red rating. The overall status is the <strong>worst</strong> of the four areas.
+        Drag a slider or type a number; the rule preview updates as you go. Defaults are shown next to each setting.</p>
+    </section>
+
+    <div id="groups" class="groups"></div>
+
+    <p class="muted privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      All settings and results are stored only in this browser. SprintPulse sends no data to any server.</p>
   </main>
+
+  <div id="saveBar" class="save-bar">
+    <span id="saveMsg" class="save-msg">All changes saved</span>
+    <div class="actions">
+      <button id="resetBtn" class="btn ghost" type="button">Reset to defaults</button>
+      <button id="discardBtn" class="btn ghost" type="button">Discard</button>
+      <button id="saveBtn" class="btn primary" type="button" title="Ctrl+S">Save</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <script src="lib/engine.js"></script>
   <script src="options.js"></script>
 </body>

@@ -4,74 +4,188 @@
   <meta charset="utf-8">
   <title>SprintPulse</title>
   <link rel="stylesheet" href="popup.css">
+  <script src="theme.js"></script>
 </head>
 <body>
   <header class="top">
     <div class="brand">
-      <img src="icons/icon48.png" alt="" width="24" height="24">
-      <span>SprintPulse</span>
+      <img src="icons/icon48.png" alt="" width="26" height="26">
+      <div class="brand-text">
+        <span class="brand-name">SprintPulse</span>
+        <span id="sourceBadge" class="badge"><span class="dot"></span><span id="sourceText">Checking page…</span></span>
+      </div>
     </div>
-    <span id="sourceBadge" class="badge">Checking page…</span>
+    <div class="top-actions">
+      <button id="themeBtn" class="icon-btn" type="button" title="Switch theme (T)" aria-label="Switch theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-sun" d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66 1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14-1.41-1.41M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/><path class="i-moon" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button id="settingsBtn" class="icon-btn" type="button" title="Settings" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+      </button>
+    </div>
   </header>
 
   <main>
-    <section id="intro" class="card">
-      <p id="introText" class="intro-text"></p>
+    <!-- Start screen -->
+    <section id="intro" class="card intro">
+      <div class="intro-head">
+        <div class="pulse-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div>
+          <h2 id="introTitle" class="intro-title">Ready when you are</h2>
+          <p id="introText" class="intro-text"></p>
+        </div>
+      </div>
 
       <div id="trelloDates" class="dates" hidden>
-        <label class="field">Sprint name (optional)
+        <label class="field">Sprint name <span class="opt">optional</span>
           <input id="sprintName" type="text" placeholder="Sprint 1" maxlength="60">
         </label>
         <div class="row">
-          <label class="field">Start date <input id="startDate" type="date"></label>
-          <label class="field">End date <input id="endDate" type="date"></label>
+          <label class="field">Start <input id="startDate" type="date"></label>
+          <label class="field">End <input id="endDate" type="date"></label>
+        </div>
+        <div class="presets" role="group" aria-label="Sprint length presets">
+          <span class="muted">Length:</span>
+          <button type="button" class="chip" data-weeks="1">1 week</button>
+          <button type="button" class="chip" data-weeks="2">2 weeks</button>
+          <button type="button" class="chip" data-weeks="3">3 weeks</button>
         </div>
       </div>
 
       <div class="actions">
-        <button id="analyzeBtn" class="primary" type="button">Analyze sprint</button>
-        <button id="demoBtn" class="secondary" type="button">Try demo data</button>
+        <button id="analyzeBtn" class="btn primary" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+          <span>Analyze sprint</span>
+        </button>
+        <button id="demoBtn" class="btn ghost" type="button" title="Shortcut: D">Try demo data</button>
       </div>
+    </section>
+
+    <!-- Loading skeleton -->
+    <section id="skeleton" class="skeleton" hidden aria-hidden="true">
+      <div class="sk sk-hero"></div>
+      <div class="sk-row"><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-chip"></div><div class="sk sk-chip"></div></div>
+      <div class="sk-grid"><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div></div>
     </section>
 
     <div id="status" class="status" role="status" aria-live="polite" hidden></div>
 
+    <!-- Results -->
     <section id="results" hidden>
-      <div class="card overall">
-        <div id="overallBadge" class="rag big">-</div>
-        <div class="overall-text">
+      <div id="hero" class="card hero">
+        <div class="ring-wrap" title="Work done vs time used">
+          <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring-track" cx="60" cy="60" r="50"/>
+            <circle id="ringTime" class="ring-time" cx="60" cy="60" r="50"/>
+            <circle id="ringDone" class="ring-done" cx="60" cy="60" r="50"/>
+          </svg>
+          <div class="ring-center">
+            <strong id="ringPct">0%</strong>
+            <span>done</span>
+          </div>
+        </div>
+        <div class="hero-text">
+          <div class="hero-top">
+            <span id="overallBadge" class="rag big">-</span>
+            <button id="rerunBtn" class="icon-btn small" type="button" title="Run again (R)" aria-label="Run again">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>
+            </button>
+          </div>
           <div id="sprintTitle" class="sprint-title"></div>
           <div id="sprintDates" class="muted"></div>
-          <div id="previous" class="muted"></div>
+          <div class="legend">
+            <span><i class="lg-done"></i>Done <b id="lgDone"></b></span>
+            <span><i class="lg-time"></i>Time used <b id="lgTime"></b></span>
+          </div>
         </div>
       </div>
+
       <p id="overallReason" class="reason"></p>
 
-      <div id="areas" class="areas"></div>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button class="tab active" role="tab" data-tab="overview" aria-selected="true" type="button">Overview</button>
+        <button class="tab" role="tab" data-tab="items" aria-selected="false" type="button">Items <span id="itemsCount" class="count"></span></button>
+        <button class="tab" role="tab" data-tab="report" aria-selected="false" type="button">Report</button>
+        <span class="tab-ink" aria-hidden="true"></span>
+      </nav>
 
-      <details id="healthBox" class="card health">
-        <summary>Board health: <strong id="healthScore">-</strong>/100 <span id="healthCount" class="muted"></span></summary>
-        <ul id="healthList" class="health-list"></ul>
-      </details>
+      <!-- Overview -->
+      <div id="pane-overview" class="pane" role="tabpanel">
+        <div id="statusBar" class="stack-bar" aria-label="Item status breakdown"></div>
+        <div id="statChips" class="stat-chips"></div>
 
-      <div class="card reports">
-        <div class="tabs" role="tablist" aria-label="Report type">
-          <button id="tabExec" class="tab active" role="tab" aria-selected="true" type="button">Executive</button>
-          <button id="tabTeam" class="tab" role="tab" aria-selected="false" type="button">Team</button>
+        <div id="areas" class="areas"></div>
+
+        <div class="card health">
+          <div class="health-head">
+            <div class="gauge" id="healthGauge"><span id="healthScore">-</span></div>
+            <div>
+              <div class="h-title">Board health</div>
+              <div id="healthCount" class="muted"></div>
+            </div>
+            <button id="healthToggle" class="btn tiny ghost" type="button" aria-expanded="false">Show</button>
+          </div>
+          <div id="healthBody" class="collapse">
+            <div class="collapse-inner">
+              <div id="healthFilters" class="filter-row"></div>
+              <ul id="healthList" class="item-list"></ul>
+            </div>
+          </div>
         </div>
-        <textarea id="reportText" readonly rows="10" aria-label="Report text"></textarea>
-        <div class="actions">
-          <button id="copyBtn" class="primary" type="button">Copy report</button>
-          <span id="copied" class="copied" hidden>Copied</span>
+
+        <div class="card trend" id="trendCard">
+          <div class="trend-head">
+            <span class="h-title">Recent checks</span>
+            <span id="previous" class="muted"></span>
+          </div>
+          <div id="trend" class="trend-dots"></div>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div id="pane-items" class="pane" role="tabpanel" hidden>
+        <div class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search" type="search" placeholder="Search by key, title or person  ( / )" aria-label="Search items">
+        </div>
+        <div id="itemFilters" class="filter-row"></div>
+        <ul id="itemList" class="item-list tall"></ul>
+      </div>
+
+      <!-- Report -->
+      <div id="pane-report" class="pane" role="tabpanel" hidden>
+        <div class="segmented" role="radiogroup" aria-label="Report type">
+          <button id="segExec" class="seg active" role="radio" aria-checked="true" type="button">Executive</button>
+          <button id="segTeam" class="seg" role="radio" aria-checked="false" type="button">Team</button>
+        </div>
+        <pre id="reportText" class="report" tabindex="0" aria-label="Report text"></pre>
+        <div class="actions spread">
+          <span id="reportMeta" class="muted"></span>
+          <div class="actions">
+            <button id="downloadBtn" class="btn ghost" type="button" title="Save as .txt">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
+              <span>Save</span>
+            </button>
+            <button id="copyBtn" class="btn primary" type="button" title="Shortcut: C">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+              <span>Copy report</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <a href="#" id="settingsLink">Settings</a>
-    <span class="muted">Data stays in your browser.</span>
+    <span class="muted"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Data stays in your browser</span>
+    <span class="foot-right">
+      <span class="muted kbd-hint" title="Keyboard shortcuts: 1/2/3 switch tabs, C copy, D demo, R run again, T theme, / search"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> <kbd>C</kbd></span>
+      <a href="#" id="settingsLink">Settings</a>
+    </span>
   </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="tooltip" class="tooltip" hidden></div>
 
   <script src="lib/engine.js"></script>
   <script src="lib/normalize.js"></script>

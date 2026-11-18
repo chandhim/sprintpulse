@@ -26,8 +26,20 @@ Both paste cleanly into email, WhatsApp or Slack.
 | Jira Cloud board (`https://<site>.atlassian.net/.../boards/<id>`) | Click the icon, then **Analyze sprint**. The active sprint is read using your logged-in session. |
 | Trello board (`https://trello.com/b/<id>/...`) | Click the icon, enter the sprint start and end dates (remembered per board), then **Analyze sprint**. |
 
-Then switch between the **Executive** and **Team** tabs and click **Copy report**.
-Open **Settings** (popup footer) to change any threshold.
+Then explore the result:
+
+- **Overview** tab: progress ring (work done vs time used), a clickable status bar, and four area cards.
+  Click an area card to see the items behind its rating. Expand **Board health** and filter by problem type.
+  **Recent checks** shows the last 10 results for the board.
+- **Items** tab: every sprint item with search and status filters. Click a status chip or bar segment on the
+  Overview tab to jump here already filtered.
+- **Report** tab: switch between **Executive** and **Team**, then **Copy report** or **Save** it as a .txt file.
+
+Keyboard shortcuts in the popup: `1` `2` `3` switch tabs, `C` copy, `D` demo, `R` run again, `/` search, `T` theme.
+The theme button cycles System → Light → Dark.
+
+Open **Settings** (popup footer or the gear icon) to change any threshold. Sliders and number fields stay in sync,
+a live preview shows the resulting Green/Amber/Red rule, and a save bar appears when you have unsaved changes (`Ctrl+S` saves).
 
 ## RAG rules (defaults, editable in Settings)
 
@@ -66,7 +78,8 @@ fetchers (with a mocked browser). Requires Node.js 18+.
 ```
 manifest.json        Chrome Manifest V3
 popup.html/.css/.js  Popup UI and controller
-options.html/.js     Settings page
+options.html/.css/.js Settings page
+theme.js             Light / dark / system theme (shared)
 lib/engine.js        RAG rules and health checks (pure functions)
 lib/normalize.js     URL detection + Jira/Trello JSON -> common item format
 lib/fetchers.js      Read-only functions injected into the board tab
