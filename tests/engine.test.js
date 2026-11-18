@@ -191,18 +191,48 @@ test('demo stays AMBER at any time of day', () => {
     assert.strictEqual(r.areas.schedule.rating, 'green', 'schedule at hour ' + h);
   }
 });
-test('executive report has 8 lines or fewer and names the status', () => {
+test('executive report is short, names the status, progress and who is blocked', () => {
+  global.SP = { engine };
   const r = engine.analyze(sample.build(NOW), {}, NOW);
   const text = report.executive(r);
-  assert.ok(text.split('\n').length <= 8, 'lines: ' + text.split('\n').length);
-  assert.ok(text.includes('Overall: AMBER'));
-  assert.ok(text.includes('Help needed: unblock POS-109, POS-110'));
+  assert.ok(text.split('\n').length <= 12, 'lines: ' + text.split('\n').length);
+  assert.ok(text.includes('AMBER. 45% done, 44% of time used. Needs attention: Blockers, Scope, Overdue.'));
+  assert.ok(text.includes('Help needed:\n- POS-109 Card payment integration | Ravindu Gunawardena | blocked, no update for 1 day'));
+  assert.ok(text.includes('POS-110 Loyalty points calculation'));
+});
+test('executive report shows the previous check when there is one', () => {
+  global.SP = { engine };
+  const r = engine.analyze(sample.build(NOW), {}, NOW);
+  const text = report.executive(r, { at: '2026-11-11T09:00:00Z', overall: 'green', progressPct: 30 });
+  assert.ok(text.includes('Last check (2026-11-11): GREEN, 30% done.'));
+  assert.ok(!report.executive(r).includes('Last check'));
+});
+test('reports do not claim an empty or undated sprint is healthy', () => {
+  global.SP = { engine };
+  const r = engine.analyze({ board: { name: 'B' }, sprint: { name: 'S1' }, items: [] }, {}, NOW);
+  const exec = report.executive(r);
+  assert.ok(exec.includes('Dates: not set'));
+  assert.ok(exec.includes('no rating yet'));
+  assert.ok(!/GREEN/.test(exec));
+  assert.ok(report.team(r).includes('no items yet'));
+});
+test('team report lists people workload, does not repeat overdue in attention, caps done list', () => {
+  global.SP = { engine };
+  const r = engine.analyze(sample.build(NOW), {}, NOW);
+  const text = report.team(r);
+  assert.ok(text.includes('OPEN WORK BY PERSON'));
+  assert.ok(/- Unassigned: 2 open/.test(text));
+  const attention = text.split('NEEDS ATTENTION')[1].split('\n\n')[0];
+  assert.ok(!/overdue/.test(attention), attention);
+  const many = JSON.parse(JSON.stringify(r));
+  many.lists.done = Array.from({ length: 14 }, (_, i) => ({ key: 'D-' + i, title: 't', assignee: 'x', status: 'done' }));
+  assert.ok(report.team(many).includes('- ...and 4 more'));
 });
 test('team report lists blocked, overdue, added and health sections', () => {
   global.SP = { engine };
   const r = engine.analyze(sample.build(NOW), {}, NOW);
   const text = report.team(r);
-  ['BLOCKED (2)', 'OVERDUE (1)', 'ADDED AFTER SPRINT START (1)', 'BOARD HEALTH ISSUES', 'DONE (9)'].forEach((h) => {
+  ['BLOCKED (2)', 'OVERDUE (1)', 'ADDED AFTER SPRINT START (1)', 'NEEDS ATTENTION', 'DONE (9)'].forEach((h) => {
     assert.ok(text.includes(h), 'missing ' + h);
   });
 });

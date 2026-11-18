@@ -425,7 +425,7 @@
     renderItemFilters();
     renderItems();
 
-    view.exec = SP.report.executive(result);
+    view.exec = SP.report.executive(result, previous);
     view.team = SP.report.team(result);
     showReport(view.report);
     showTab(view.tab);

@@ -55,7 +55,7 @@ The panel **follows your active tab**: switch to another board and it resets to 
   Click an area card to see the items behind its rating. Expand **Board health** and filter by problem type.
   **Recent checks** shows the last 10 results for the board.
 - **Items**: every sprint item with search and status filters. Click a status chip or bar segment on Overview to jump here pre-filtered.
-- **Report**: switch **Executive** / **Team**, then **Copy report** or **Save** as `.txt`. Both paste cleanly into email, WhatsApp or Slack.
+- **Report**: switch **Executive** (one screen: verdict, progress, trend vs the last check, who to unblock) or **Team** (blocked, overdue, scope creep, stale or unassigned work, workload per person). **Copy report** or **Save** as `.txt`. Both paste cleanly into email, WhatsApp or Slack.
 </details>
 
 <details>
@@ -123,7 +123,7 @@ Nothing is read from other sites.
 ## Develop
 
 ```
-node tests/engine.test.js     # 24 tests, Node.js 18+
+node tests/engine.test.js     # 27 tests, Node.js 18+
 ```
 
 <details>
