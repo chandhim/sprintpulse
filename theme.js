@@ -1,4 +1,4 @@
-/* SprintPulse theme: system / light / dark, shared by the popup and the settings page. */
+/* SprintPulse theme: system / light / dark, shared by the side panel and the settings page. */
 (function () {
   'use strict';
 
